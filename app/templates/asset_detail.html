@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ asset.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ asset.name }}
+  <span class="badge badge-{{ asset.status }}">{{ asset.status }}</span>
+</h1>
+
+<div class="detail-grid">
+  <div class="detail-card">
+    <h2>基本情報</h2>
+    <table class="detail-table">
+      <tr><th>ID</th><td>{{ asset.id }}</td></tr>
+      <tr><th>機器名</th><td>{{ asset.name }}</td></tr>
+      <tr><th>種別</th><td>{{ asset.asset_type }}</td></tr>
+      <tr><th>シリアル番号</th><td>{{ asset.serial_number or '-' }}</td></tr>
+      <tr><th>ステータス</th><td>{{ asset.status }}</td></tr>
+      <tr><th>設置場所</th><td>{{ asset.location or '-' }}</td></tr>
+      <tr><th>購入日</th><td>{{ asset.purchased_at or '-' }}</td></tr>
+      <tr><th>備考</th><td>{{ asset.notes or '-' }}</td></tr>
+    </table>
+  </div>
+
+  <div class="detail-card">
+    <h2>操作</h2>
+    <div class="action-buttons">
+      <a href="{{ url_for('edit_asset', asset_id=asset.id) }}" class="btn btn-warning">編集</a>
+
+      {% if asset.status != '貸出中' and asset.status != '廃棄済み' %}
+      <a href="{{ url_for('lend_asset_view', asset_id=asset.id) }}" class="btn btn-success">貸出登録</a>
+      {% endif %}
+
+      {% if asset.status == '貸出中' %}
+      <form method="post" action="{{ url_for('return_asset_view', asset_id=asset.id) }}" style="display:inline;">
+        <input type="hidden" name="returned_at" value="">
+        <button type="submit" class="btn btn-info">返却登録（今日）</button>
+      </form>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('delete_asset_view', asset_id=asset.id) }}"
+            onsubmit="return confirm('本当に削除しますか？');" style="display:inline;">
+        <button type="submit" class="btn btn-danger">削除</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<h2>貸出履歴</h2>
+{% if loans %}
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>借用者</th>
+        <th>貸出日</th>
+        <th>返却日</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ln in loans %}
+      <tr>
+        <td>{{ ln.id }}</td>
+        <td>{{ ln.borrower_name }}</td>
+        <td>{{ ln.loaned_at }}</td>
+        <td>{% if ln.returned_at %}{{ ln.returned_at }}{% else %}<span class="badge badge-貸出中">未返却</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">貸出履歴はありません。</p>
+{% endif %}
+
+<p><a href="{{ url_for('index') }}">&larr; 一覧に戻る</a></p>
+{% endblock %}

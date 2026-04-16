@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}資産台帳{% endblock %} — asset-manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <a href="{{ url_for('index') }}" class="brand">資産台帳管理</a>
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}">一覧</a>
+        <a href="{{ url_for('new_asset') }}">新規登録</a>
+        <a href="{{ url_for('export') }}">CSVエクスポート</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>asset-manager &copy; 2025</p>
+  </footer>
+</body>
+</html>

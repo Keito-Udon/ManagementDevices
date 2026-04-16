@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}貸出登録 — {{ asset.name }}{% endblock %}
+
+{% block content %}
+<h1>貸出登録: {{ asset.name }}</h1>
+
+<div class="info-box">
+  <p><strong>種別：</strong>{{ asset.asset_type }}
+     <strong>シリアル番号：</strong>{{ asset.serial_number or '-' }}
+     <strong>設置場所：</strong>{{ asset.location or '-' }}</p>
+</div>
+
+<form method="post" class="form-card">
+  <div class="form-group">
+    <label for="borrower_name">借用者名 <span class="required">*</span></label>
+    <input type="text" id="borrower_name" name="borrower_name"
+           placeholder="氏名を入力" required>
+  </div>
+
+  <div class="form-group">
+    <label for="loaned_at">貸出日 <span class="required">*</span></label>
+    <input type="date" id="loaned_at" name="loaned_at" value="{{ today }}" required>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-success">貸出登録</button>
+    <a href="{{ url_for('asset_detail', asset_id=asset.id) }}" class="btn btn-secondary">キャンセル</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}機器一覧{% endblock %}
+
+{% block content %}
+<h1>機器一覧</h1>
+
+<form class="search-form" method="get" action="{{ url_for('index') }}">
+  <input type="text" name="keyword" value="{{ keyword }}" placeholder="機器名・種別・場所で検索…">
+  <select name="status">
+    <option value="">すべてのステータス</option>
+    {% for s in statuses %}
+    <option value="{{ s }}" {% if s == selected_status %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-primary">検索</button>
+  <a href="{{ url_for('index') }}" class="btn btn-secondary">リセット</a>
+</form>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>機器名</th>
+        <th>種別</th>
+        <th>シリアル番号</th>
+        <th>ステータス</th>
+        <th>設置場所</th>
+        <th>購入日</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if assets %}
+        {% for a in assets %}
+        <tr>
+          <td>{{ a.id }}</td>
+          <td><a href="{{ url_for('asset_detail', asset_id=a.id) }}">{{ a.name }}</a></td>
+          <td>{{ a.asset_type }}</td>
+          <td>{{ a.serial_number or '-' }}</td>
+          <td><span class="badge badge-{{ a.status }}">{{ a.status }}</span></td>
+          <td>{{ a.location or '-' }}</td>
+          <td>{{ a.purchased_at or '-' }}</td>
+          <td class="actions">
+            <a href="{{ url_for('asset_detail', asset_id=a.id) }}" class="btn btn-sm btn-info">詳細</a>
+            <a href="{{ url_for('edit_asset', asset_id=a.id) }}" class="btn btn-sm btn-warning">編集</a>
+            {% if a.status != '貸出中' and a.status != '廃棄済み' %}
+            <a href="{{ url_for('lend_asset_view', asset_id=a.id) }}" class="btn btn-sm btn-success">貸出</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="8" class="empty">該当する機器はありません。</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<p class="total">合計 {{ assets|length }} 件</p>
+{% endblock %}

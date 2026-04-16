@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{% if asset %}機器編集{% else %}機器登録{% endif %}{% endblock %}
+
+{% block content %}
+<h1>{% if asset %}機器を編集: {{ asset.name }}{% else %}新規機器登録{% endif %}</h1>
+
+<form method="post" class="form-card">
+  <div class="form-group">
+    <label for="name">機器名 <span class="required">*</span></label>
+    <input type="text" id="name" name="name"
+           value="{{ asset.name if asset else '' }}" required>
+  </div>
+
+  <div class="form-group">
+    <label for="asset_type">種別 <span class="required">*</span></label>
+    <input type="text" id="asset_type" name="asset_type"
+           value="{{ asset.asset_type if asset else '' }}"
+           placeholder="PC, モニター, キーボード, …" required>
+  </div>
+
+  <div class="form-group">
+    <label for="serial_number">シリアル番号</label>
+    <input type="text" id="serial_number" name="serial_number"
+           value="{{ asset.serial_number if asset else '' }}">
+  </div>
+
+  <div class="form-group">
+    <label for="status">ステータス <span class="required">*</span></label>
+    <select id="status" name="status" required>
+      {% for s in statuses %}
+      <option value="{{ s }}"
+        {% if asset and asset.status == s %}selected{% elif not asset and s == '保管中' %}selected{% endif %}>
+        {{ s }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="location">設置場所</label>
+    <input type="text" id="location" name="location"
+           value="{{ asset.location if asset else '' }}"
+           placeholder="研究室A, サーバー室, …">
+  </div>
+
+  <div class="form-group">
+    <label for="purchased_at">購入日</label>
+    <input type="date" id="purchased_at" name="purchased_at"
+           value="{{ asset.purchased_at if asset else '' }}">
+  </div>
+
+  <div class="form-group">
+    <label for="notes">備考</label>
+    <textarea id="notes" name="notes" rows="3">{{ asset.notes if asset else '' }}</textarea>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">
+      {% if asset %}更新する{% else %}登録する{% endif %}
+    </button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">キャンセル</a>
+  </div>
+</form>
+{% endblock %}
